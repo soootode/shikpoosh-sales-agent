@@ -17,11 +17,41 @@ st.markdown("""
 <style>
     @import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css');
 
-    html, body, [class*="css"], .stApp {
+    /* فونت و پس‌زمینه‌ی کلی — بدون دست‌کاری جهت روی همه‌ی المان‌ها */
+    html, body, .stApp {
         font-family: 'Vazirmatn', 'Tahoma', sans-serif !important;
+        background-color: #09090b !important;
+    }
+
+    /* RTL فقط برای عناصر متنی/مارک‌داون، نه برای ویجت‌های کانواس مثل دیتافریم */
+    .stApp .block-container,
+    .stMarkdown, .stCaption, .stApp h1, .stApp h2, .stApp h3,
+    .stApp p, .stApp label, .stApp li {
         direction: rtl !important;
         text-align: right !important;
-        background-color: #09090b !important;
+    }
+
+    /* عنوان اصلی */
+    h1 {
+        color: #fafafa !important;
+        font-size: 1.8rem !important;
+        margin-bottom: 0.2rem !important;
+    }
+
+    /* ---------------------------------------------- */
+    /* اصلاح حیاتی: جدول موجودی و سفارش‌ها در سایدبار  */
+    /* دیتافریم را کاملاً LTR و شفاف نگه می‌داریم تا    */
+    /* گرید داخلی‌اش (canvas-based) درست رندر شود      */
+    /* ---------------------------------------------- */
+    div[data-testid="stDataFrame"] {
+        direction: ltr !important;
+        text-align: left !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+        border: 1px solid #3f3f46 !important;
+    }
+    div[data-testid="stDataFrame"] * {
+        direction: ltr !important;
     }
 
     /* کانتینر چت */
@@ -34,10 +64,11 @@ st.markdown("""
     /* حباب پیام کاربر (بنفش تلگرامی، گوشه‌های گرد، سمت راست) */
     div[data-testid="stChatMessage"]:has(div[aria-label="Chat message from user"]),
     div[data-testid="stChatMessage"]:has(.stChatMessageAvatarUser) {
-        flex-direction: row !important;
+        flex-direction: row-reverse !important;
         margin-right: 0 !important;
         margin-left: auto !important;
         max-width: 85% !important;
+        direction: rtl !important;
     }
 
     div[data-testid="stChatMessage"]:has(div[aria-label="Chat message from user"]) div[data-testid="stChatMessageContent"],
@@ -47,15 +78,18 @@ st.markdown("""
         border-radius: 18px 4px 18px 18px !important;
         padding: 10px 16px !important;
         box-shadow: 0 4px 14px rgba(67, 56, 202, 0.25) !important;
+        text-align: right !important;
+        direction: rtl !important;
     }
 
     /* حباب پیام شایان / دستیار (خاکستری مدرن، سمت چپ) */
     div[data-testid="stChatMessage"]:has(div[aria-label="Chat message from assistant"]),
     div[data-testid="stChatMessage"]:has(.stChatMessageAvatarAssistant) {
-        flex-direction: row !important;
+        flex-direction: row-reverse !important;
         margin-left: 0 !important;
         margin-right: auto !important;
         max-width: 90% !important;
+        direction: rtl !important;
     }
 
     div[data-testid="stChatMessage"]:has(div[aria-label="Chat message from assistant"]) div[data-testid="stChatMessageContent"],
@@ -66,9 +100,11 @@ st.markdown("""
         border-radius: 4px 18px 18px 18px !important;
         padding: 14px 18px !important;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+        text-align: right !important;
+        direction: rtl !important;
     }
 
-    /* جدول‌های زیبا و تمیز داخل چت */
+    /* جدول‌های مارک‌داون داخل چت (خروجی متنی مدل، نه دیتافریم) */
     div[data-testid="stChatMessage"] table {
         width: 100% !important;
         border-collapse: collapse !important;
@@ -77,6 +113,7 @@ st.markdown("""
         overflow: hidden !important;
         border: 1px solid #3f3f46 !important;
         font-size: 13px !important;
+        direction: rtl !important;
     }
 
     div[data-testid="stChatMessage"] th {
@@ -105,13 +142,6 @@ st.markdown("""
         border: 1px solid #3f3f46 !important;
         border-radius: 12px !important;
         color: #ffffff !important;
-    }
-
-    /* عنوان اصلی */
-    h1 {
-        color: #fafafa !important;
-        font-size: 1.8rem !important;
-        margin-bottom: 0.2rem !important;
     }
 </style>
 """, unsafe_allow_html=True)
