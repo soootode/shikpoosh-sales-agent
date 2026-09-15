@@ -1,6 +1,6 @@
 from agent import sales_bot
 from data import PRODUCTS
-from db import get_all_orders
+from db import get_all_orders, DB_PATH
 from langchain_core.messages import AIMessage, HumanMessage
 import pandas as pd
 import streamlit as st
@@ -64,11 +64,21 @@ st.markdown("""
     /* حباب پیام کاربر (بنفش تلگرامی، گوشه‌های گرد، سمت راست) */
     div[data-testid="stChatMessage"]:has(div[aria-label="Chat message from user"]),
     div[data-testid="stChatMessage"]:has(.stChatMessageAvatarUser) {
-        flex-direction: row-reverse !important;
+        flex-direction: row !important;
         margin-right: 0 !important;
         margin-left: auto !important;
         max-width: 85% !important;
         direction: rtl !important;
+    }
+
+    /* آواتار پیام کاربر (مربع/دایره‌ی رنگی) باید بعد از حباب، سمت راست بیفتد */
+    div[data-testid="stChatMessage"]:has(div[aria-label="Chat message from user"]) > *:first-child,
+    div[data-testid="stChatMessage"]:has(.stChatMessageAvatarUser) > *:first-child {
+        order: 2 !important;
+    }
+    div[data-testid="stChatMessage"]:has(div[aria-label="Chat message from user"]) > *:last-child,
+    div[data-testid="stChatMessage"]:has(.stChatMessageAvatarUser) > *:last-child {
+        order: 1 !important;
     }
 
     div[data-testid="stChatMessage"]:has(div[aria-label="Chat message from user"]) div[data-testid="stChatMessageContent"],
@@ -175,6 +185,14 @@ with st.sidebar:
 
     st.dataframe(df_products, use_container_width=True, hide_index=True)
 
+    st.download_button(
+        label="⬇️ دانلود موجودی انبار (CSV)",
+        data=df_products.to_csv(index=False).encode("utf-8-sig"),
+        file_name="موجودی_انبار.csv",
+        mime="text/csv",
+        use_container_width=True,
+    )
+
     st.subheader("📝 سفارش‌های جدید ثبت‌شده (SQLite)")
     orders = get_all_orders()
     if orders:
@@ -192,8 +210,31 @@ with st.sidebar:
             inplace=True,
         )
         st.dataframe(df_orders, use_container_width=True, hide_index=True)
+
+        st.download_button(
+            label="⬇️ دانلود سفارش‌ها (CSV)",
+            data=df_orders.to_csv(index=False).encode("utf-8-sig"),
+            file_name="سفارشات.csv",
+            mime="text/csv",
+            use_container_width=True,
+        )
     else:
         st.info("هنوز سفارشی ثبت نشده است.")
+
+    st.divider()
+    st.subheader("🗄️ اتصال مستقیم به دیتابیس")
+    st.caption("فایل خام SQLite شامل تمام سفارش‌ها را می‌توانید مستقیم دانلود کنید و در ابزارهایی مثل DB Browser for SQLite باز کنید.")
+    try:
+        with open(DB_PATH, "rb") as db_file:
+            st.download_button(
+                label="⬇️ دانلود کامل دیتابیس (shop.db)",
+                data=db_file.read(),
+                file_name="shop.db",
+                mime="application/octet-stream",
+                use_container_width=True,
+            )
+    except FileNotFoundError:
+        st.warning("فایل دیتابیس هنوز ساخته نشده است.")
 
 # مدیریت حافظه چت در Streamlit
 if "messages" not in st.session_state:
